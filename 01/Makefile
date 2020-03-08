@@ -1,6 +1,16 @@
-simple_run: main.cpp mem.h mem.cpp test.py
-	g++ -W main.cpp mem.cpp
+CC=g++
 
-test: main.cpp mem.h mem.cpp test.py
-	g++ -W main.cpp mem.cpp
+test: mem test.py
 	python test.py
+
+mem: main.o mem.o 
+    $(CC) -o mem main.o square.o
+
+main.o: main.cpp mem.h
+    $(CC) -c main.cpp
+
+mem.o: mem.cpp mem.h
+    $(CC) -c square.cpp
+
+clean:
+    rm -rf *.o mem
