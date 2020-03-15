@@ -1,6 +1,9 @@
 CC=g++
 FLAG=-std=c++11
 
+test: parcer test.py
+	python test.py
+
 parcer: main.o parcer.o 
 	$(CC) $(FLAG) -o parcer main.o parcer.o
 

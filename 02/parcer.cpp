@@ -1,25 +1,47 @@
 #include "parcer.h"
 
+static tokenHandler currTokenHandler;
+
 void stringParcer(const char* str) {
-	char token[LEN];
-	int tmp;
+	char token[LEN], c;
 	token[0] = 0;
+	int j = 0;
 
 	if (str && str[0])
-		tokenRegistered(startHandler);
+		setTokenHandler(startHandler);
 	else
 		return;
 
-	while (sscanf(str, "%s", token) == 1) {
-		if (sscanf(token, "%d", &tmp) == 1)
-			tokenRegistered(tokenNumberHandler);
-		//other types of tokens
+	currTokenHandler(token);
+
+	for (int i = 0; str[i]; ++i) {
+		c = str[i];
+
+		if (c == ' ' || c == '\t' || c == '\n') {
+			if (token[0]) {
+				token[j] = 0;
+				currTokenHandler(token);
+			}
+			j = 0;
+			token[0] = 0;
+			continue;
+		}
+
+		if (!isdigit(c))
+			setTokenHandler(tokenStringHandler);
 		else
-			tokenRegistered(tokenStringHandler);
+			setTokenHandler(tokenNumberHandler);
+
+		token[j] = c, ++j;
 	}
 
 	token[0] = 0;
-	tokenRegistered(endHandler);
+	setTokenHandler(endHandler);
+	currTokenHandler(token);
+}
+
+void setTokenHandler(tokenHandler handler) {
+	currTokenHandler = handler;
 }
 
 void tokenStringHandler(const char* token) {
@@ -31,9 +53,9 @@ void tokenNumberHandler(const char* token) {
 }
 
 void startHandler(const char* token) {
-	std::cout << "Begin " << token << '\n';
+	std::cout << "Begin" << token << '\n';
 }
 
 void endHandler(const char* token) {
-	std::cout << "End " << token << '\n';
+	std::cout << "End" << token << '\n';
 }

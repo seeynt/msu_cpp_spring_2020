@@ -5,7 +5,7 @@
 
 using tokenHandler = void(*)(const char* token);
 
-void tokenRegistered(tokenHandler handler);
+void setTokenHandler(tokenHandler handler);
 void stringParcer(const char* str);
 
 void tokenStringHandler(const char* token);
