@@ -13,6 +13,7 @@ void stringParcer(const char* str) {
 		return;
 
 	currTokenHandler(token);
+	setTokenHandler(tokenNumberHandler);
 
 	for (int i = 0; str[i]; ++i) {
 		c = str[i];
@@ -24,13 +25,12 @@ void stringParcer(const char* str) {
 			}
 			j = 0;
 			token[0] = 0;
+			setTokenHandler(tokenNumberHandler);
 			continue;
 		}
 
 		if (!isdigit(c))
 			setTokenHandler(tokenStringHandler);
-		else
-			setTokenHandler(tokenNumberHandler);
 
 		token[j] = c, ++j;
 	}
