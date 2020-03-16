@@ -8,8 +8,7 @@ using tokenHandler = void(*)(const char* token);
 void setTokenHandler(tokenHandler handler);
 void stringParcer(const char* str);
 
-void tokenStringHandler(const char* token);
-void tokenNumberHandler(const char* token);
-//more tokens handlers
-void startHandler(const char* token);
-void endHandler(const char* token);
+void stringCallback(const char* token);
+void numberCallback(const char* token);
+void startCallback(const char* token);
+void endCallback(const char* token);

@@ -1,6 +1,10 @@
 #include "parcer.h"
 
 static tokenHandler currTokenHandler;
+static tokenHandler stringHandler = stringCallback;
+static tokenHandler numberHandler = numberCallback;
+static tokenHandler endHandler = endCallback;
+static tokenHandler startHandler = startCallback;
 
 void stringParcer(const char* str) {
 	char token[LEN], c;
@@ -13,7 +17,7 @@ void stringParcer(const char* str) {
 		return;
 
 	currTokenHandler(token);
-	setTokenHandler(tokenNumberHandler);
+	setTokenHandler(numberHandler);
 
 	for (int i = 0; str[i]; ++i) {
 		c = str[i];
@@ -25,12 +29,12 @@ void stringParcer(const char* str) {
 			}
 			j = 0;
 			token[0] = 0;
-			setTokenHandler(tokenNumberHandler);
+			setTokenHandler(numberHandler);
 			continue;
 		}
 
 		if (!isdigit(c))
-			setTokenHandler(tokenStringHandler);
+			setTokenHandler(stringHandler);
 
 		token[j] = c, ++j;
 	}
@@ -44,18 +48,18 @@ void setTokenHandler(tokenHandler handler) {
 	currTokenHandler = handler;
 }
 
-void tokenStringHandler(const char* token) {
+void stringCallback(const char* token) {
 	std::cout << "S: " << token << '\n';
 }
 
-void tokenNumberHandler(const char* token) {
+void numberCallback(const char* token) {
 	std::cout << "N: " << token << '\n';
 }
 
-void startHandler(const char* token) {
+void startCallback(const char* token) {
 	std::cout << "Begin" << token << '\n';
 }
 
-void endHandler(const char* token) {
+void endCallback(const char* token) {
 	std::cout << "End" << token << '\n';
 }
