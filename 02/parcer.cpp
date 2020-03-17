@@ -1,65 +1,59 @@
 #include "parcer.h"
 
-static tokenHandler currTokenHandler;
 static tokenHandler stringHandler = stringCallback;
-static tokenHandler numberHandler = numberCallback;
+static tokenNumberHandler numberHandler = numberCallback;
 static tokenHandler endHandler = endCallback;
 static tokenHandler startHandler = startCallback;
 
-void stringParcer(const char* str) {
-	char token[LEN], c;
-	token[0] = 0;
+void stringParcer(char* str) {
+	char *token = str, c;
 	int j = 0;
+	bool is_number = 1;
 
 	if (str && str[0])
-		setTokenHandler(startHandler);
+		startHandler(token);
 	else
 		return;
-
-	currTokenHandler(token);
-	setTokenHandler(numberHandler);
 
 	for (int i = 0; str[i]; ++i) {
 		c = str[i];
 
 		if (c == ' ' || c == '\t' || c == '\n') {
-			if (token[0]) {
-				token[j] = 0;
-				currTokenHandler(token);
+			if (j > 0) {
+				str[i] = 0;
+				if (is_number)
+					numberHandler(atoi(token));
+				else
+					stringHandler(token);
+				str[i] = c;
 			}
-			j = 0;
-			token[0] = 0;
-			setTokenHandler(numberHandler);
+
+			j = 0, is_number = 1;
 			continue;
 		}
 
+		if (j == 0)
+			token = str + i;
 		if (!isdigit(c))
-			setTokenHandler(stringHandler);
-
-		token[j] = c, ++j;
+			is_number = 0;
+		++j;
 	}
 
-	token[0] = 0;
-	setTokenHandler(endHandler);
-	currTokenHandler(token);
-}
-
-void setTokenHandler(tokenHandler handler) {
-	currTokenHandler = handler;
+	endHandler(token);
 }
 
 void stringCallback(const char* token) {
 	std::cout << "S: " << token << '\n';
 }
 
-void numberCallback(const char* token) {
+void numberCallback(int token) {
 	std::cout << "N: " << token << '\n';
 }
 
 void startCallback(const char* token) {
-	std::cout << "Begin" << token << '\n';
+	std::cout << "Begin\n";
 }
 
 void endCallback(const char* token) {
-	std::cout << "End" << token << '\n';
+	std::cout << "End\n";
 }

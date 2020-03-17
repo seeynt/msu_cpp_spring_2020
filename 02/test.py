@@ -26,7 +26,7 @@ def test(command, process_input, expected_code):
         print('Invalid output')
         return
 
-    if ((l[0] != 'Begin') | (l[1] != 'S: Starting1') | (l[3] != 'End') | (l[7] != 'S: 1st') |  (l[14] != 'N: 03') | (l[17] != 'End')):
+    if ((l[0] != 'Begin') | (l[1] != 'S: Starting1') | (l[3] != 'End') | (l[7] != 'S: 1st') |  (l[14] != 'N: 3') | (l[17] != 'End')):
         print('WA')
         return
 

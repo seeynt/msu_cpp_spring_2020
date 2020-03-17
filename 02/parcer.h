@@ -1,14 +1,12 @@
 #include <iostream>
 #include <functional>
 
-#define LEN 256
-
 using tokenHandler = void(*)(const char* token);
+using tokenNumberHandler = void(*)(int token);
 
-void setTokenHandler(tokenHandler handler);
-void stringParcer(const char* str);
+void stringParcer(char* str);
 
 void stringCallback(const char* token);
-void numberCallback(const char* token);
+void numberCallback(int token);
 void startCallback(const char* token);
 void endCallback(const char* token);
