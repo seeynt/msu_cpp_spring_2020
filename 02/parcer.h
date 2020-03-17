@@ -4,7 +4,7 @@
 using tokenHandler = void(*)(const char* token);
 using tokenNumberHandler = void(*)(int token);
 
-void stringParcer(char* str);
+void stringParcer(const char* rawStr);
 
 void stringCallback(const char* token);
 void numberCallback(int token);

@@ -5,10 +5,19 @@ static tokenNumberHandler numberHandler = numberCallback;
 static tokenHandler endHandler = endCallback;
 static tokenHandler startHandler = startCallback;
 
-void stringParcer(char* str) {
-	char *token = str, c;
+void stringParcer(const char* rawStr) {
+	char *token, c, *str;
 	int j = 0;
 	bool is_number = 1;
+
+	for (j = 0; rawStr[j]; ++j);
+	if (!(str = (char*)malloc(j + 1)))
+		return;
+	for (j = 0; rawStr[j]; ++j)
+		str[j] = rawStr[j];
+	str[j] = 0, j = 0;
+
+	token = str;
 
 	if (str && str[0])
 		startHandler(token);
@@ -40,6 +49,7 @@ void stringParcer(char* str) {
 	}
 
 	endHandler(token);
+	free(str);
 }
 
 void stringCallback(const char* token) {
