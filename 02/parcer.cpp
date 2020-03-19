@@ -5,22 +5,13 @@ static tokenNumberHandler numberHandler = numberCallback;
 static tokenHandler endHandler = endCallback;
 static tokenHandler startHandler = startCallback;
 
-void stringParcer(const char* rawStr) {
-	char *token, c, *str;
-	int j = 0;
+void stringParcer(const char* str) {
+	char c;
+	int j = 0, st = 0, n;
 	bool is_number = 1;
 
-	for (j = 0; rawStr[j]; ++j);
-	if (!(str = (char*)malloc(j + 1)))
-		return;
-	for (j = 0; rawStr[j]; ++j)
-		str[j] = rawStr[j];
-	str[j] = 0, j = 0;
-
-	token = str;
-
 	if (str && str[0])
-		startHandler(token);
+		startHandler(std::string_view(str, 0));
 	else
 		return;
 
@@ -29,12 +20,12 @@ void stringParcer(const char* rawStr) {
 
 		if (c == ' ' || c == '\t' || c == '\n') {
 			if (j > 0) {
-				str[i] = 0;
-				if (is_number)
-					numberHandler(atoi(token));
+				if (is_number) {
+					std::from_chars(str + st, str + i, n);
+					numberHandler(n);
+				}
 				else
-					stringHandler(token);
-				str[i] = c;
+					stringHandler(std::string_view(str + st, j));
 			}
 
 			j = 0, is_number = 1;
@@ -42,17 +33,16 @@ void stringParcer(const char* rawStr) {
 		}
 
 		if (j == 0)
-			token = str + i;
+			st = i;
 		if (!isdigit(c))
 			is_number = 0;
 		++j;
 	}
 
-	endHandler(token);
-	free(str);
+	endHandler(std::string_view(str, 0));
 }
 
-void stringCallback(const char* token) {
+void stringCallback(std::string_view token) {
 	std::cout << "S: " << token << '\n';
 }
 
@@ -60,10 +50,10 @@ void numberCallback(int token) {
 	std::cout << "N: " << token << '\n';
 }
 
-void startCallback(const char* token) {
+void startCallback(std::string_view token) {
 	std::cout << "Begin\n";
 }
 
-void endCallback(const char* token) {
+void endCallback(std::string_view token) {
 	std::cout << "End\n";
 }
