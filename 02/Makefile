@@ -1,5 +1,5 @@
 CC=g++
-FLAG=-std=c++11
+FLAG=-std=c++17
 
 test: parcer test.py
 	python test.py
