@@ -1,21 +1,20 @@
 #include "matrix.h"
 
 Matrix::Row::Row(std::size_t c) {
-	this->cols = c;
-	if (!(A = (int*)malloc(c * sizeof(int))))
-		throw std::out_of_range("Allocation error in row");
+	cols = c;
+	A = new int[cols];
 }
 
 const int& Matrix::Row::operator[](std::size_t j) const {
-	if (j >= this->cols)
+	if (j >= cols)
 		throw std::out_of_range("Out of range error in j");
-	return *(this->A + j);
+	return A[j];
 }
 
 int& Matrix::Row::operator[](std::size_t j) {
-	if (j >= this->cols)
+	if (j >= cols)
 		throw std::out_of_range("Out of range error in j");
-	return *(this->A + j);
+	return A[j];
 }
 
 Matrix::Row::~Row() {
@@ -24,59 +23,56 @@ Matrix::Row::~Row() {
 
 Matrix::Matrix(std::size_t r, std::size_t c) {
 	Matrix::Row* ptr;
-	this->rows = r, this->cols = c;
+	rows = r, cols = c;
 
-	if (!(B = (Matrix::Row**)malloc(r * sizeof(Matrix::Row*))))
-		throw std::out_of_range("Allocation error in matrix");
+	B = new Row*[rows];
 
-	for (std::size_t i = 0; i < r; ++i) {
+	for (std::size_t i = 0; i < rows; ++i) {
 		try {
 			ptr = new Matrix::Row(c);
 		}
-		catch(std::out_of_range& oor) {
-			for (int j = 0; j < i; ++j)
-				delete B[j];
-			free(B);
-			throw oor;
+		catch(std::bad_alloc& ba) {
+			delete []B;
+			throw ba;
 		}
 		B[i] = ptr;
 	}
 }
 
 std::size_t Matrix::getRows() const {
-	return this->rows;
+	return rows;
 }
 
 std::size_t Matrix::getCols() const {
-	return this->cols;
+	return cols;
 }
 
 const Matrix::Row& Matrix::operator[](std::size_t i) const {
-	if (i >= this->rows)
+	if (i >= rows)
 		throw std::out_of_range("Out of range error in i");
-	return *(this->B[i]);
+	return *B[i];
 }
 
 Matrix::Row& Matrix::operator[](std::size_t i) {
-	if (i >= this->rows)
+	if (i >= rows)
 		throw std::out_of_range("Out of range error in i");
-	return *(this->B[i]);
+	return *B[i];
 }
 
 void Matrix::operator*=(int d) {
-	for (std::size_t i = 0; i < this->rows; ++i)
-    	for (std::size_t j = 0; j < this->cols; ++j)
+	for (std::size_t i = 0; i < rows; ++i)
+    	for (std::size_t j = 0; j < cols; ++j)
         	(*this)[i][j] *= d;
 }
 
 bool Matrix::operator==(const Matrix& other) const {
     if (this == &other)
         return true;
-    if (other.getCols() != this->cols || other.getRows() != this->rows)
+    if (other.getCols() != cols || other.getRows() != rows)
     	return false;
 
-    for (std::size_t i = 0; i < this->rows; ++i)
-    	for (std::size_t j = 0; j < this->cols; ++j)
+    for (std::size_t i = 0; i < rows; ++i)
+    	for (std::size_t j = 0; j < cols; ++j)
         	if ((*this)[i][j] != other[i][j])
         		return false;
 
@@ -88,7 +84,5 @@ bool Matrix::operator!=(const Matrix& other) const {
 }
 
 Matrix::~Matrix() {
-	for (std::size_t i = 0; i < this->rows; ++i)
-		delete B[i];
-	free(B);
+	delete []B;
 }

@@ -1,4 +1,5 @@
 #include <string>
+#include <new>
 #include "matrix.h"
 
 int main() {
@@ -14,17 +15,15 @@ int main() {
 	try {
 		Matrix n(1, -1);
 	}
-	catch(std::out_of_range& oor) {
-		if (strcmp(oor.what(), "Allocation error in matrix"))
-			printf("Test 3 passed (bad alloc 1)\n");
+	catch(std::bad_alloc& ba) {
+		printf("Test 3 passed (bad alloc 1)\n");
 	}
 
 	try {
 		Matrix n(-1, 1);
 	}
-	catch(std::out_of_range& oor) {
-		if (strcmp(oor.what(), "Allocation error in row"))
-			printf("Test 4 passed (bad alloc 2)\n");
+	catch(std::bad_alloc& ba) {
+		printf("Test 4 passed (bad alloc 2)\n");
 	}
 
 	const Matrix cm(2, 3);

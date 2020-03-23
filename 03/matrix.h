@@ -1,6 +1,7 @@
 #include <cstddef>
 #include <stdlib.h>
 #include <stdexcept>
+#include <new>
 
 class Matrix {
 	std::size_t rows;
