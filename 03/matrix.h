@@ -24,10 +24,9 @@ public:
 	std::size_t getRows() const;
 	std::size_t getCols() const;
 	~Matrix();
-
-    const Row& operator[](std::size_t i) const;
-    Row& operator[](std::size_t i);
-    void operator*=(int d);
-    bool operator==(const Matrix& other) const;
-    bool operator!=(const Matrix& other) const;
+	const Row& operator[](std::size_t i) const;
+	Row& operator[](std::size_t i);
+	void operator*=(int d);
+	bool operator==(const Matrix& other) const;
+	bool operator!=(const Matrix& other) const;
 };
