@@ -32,8 +32,7 @@ Matrix::Matrix(std::size_t r, std::size_t c) {
             ptr = new Matrix::Row(c);
         }
         catch(std::bad_alloc& ba) {
-            for (int j = 0; j < i; ++j) {
-                printf("I am here\n");
+            for (int j = 0; j <= i; ++j) {
                 delete B[j];
             }
             delete B;
