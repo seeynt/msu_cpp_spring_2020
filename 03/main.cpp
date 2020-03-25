@@ -26,15 +26,15 @@ int main() {
         printf("Test 4 passed (bad alloc 2)\n");
     }
 
-    const Matrix cm(2, 3);
+    const Matrix cm(2000, 3);
     if (!cm[1][1] || cm[1][1])
         printf("Test 5 passed (const matrix[][])\n");
 
     if (cm.getRows() == 2 && cm.getCols() == 3)
         printf("Test 6 passed (getRows and getCols)\n");
 
-    Matrix dm(2, 3);
-    for (int i = 0; i < 2; ++i)
+    Matrix dm(2000, 3);
+    for (int i = 0; i < 2000; ++i)
         for (int j = 0; j < 3; ++j)
             dm[i][j] = cm[i][j];
 
@@ -42,6 +42,7 @@ int main() {
         printf("Test 7 passed (==)\n");
 
     dm[0][1] = !cm[0][1];
+
     if (dm != cm)
         printf("Test 8 passed (!=)\n");
 

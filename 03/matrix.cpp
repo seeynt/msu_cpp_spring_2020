@@ -18,24 +18,24 @@ int& Matrix::Row::operator[](std::size_t j) {
 }
 
 Matrix::Row::~Row() {
-    delete A;
+    delete[] A;
 }
 
 Matrix::Matrix(std::size_t r, std::size_t c) {
-    Matrix::Row* ptr;
+    Row* ptr;
     rows = r, cols = c;
 
     B = new Row*[rows];
 
     for (std::size_t i = 0; i < rows; ++i) {
         try {
-            ptr = new Matrix::Row(c);
+            ptr = new Matrix::Row(cols);
         }
         catch(std::bad_alloc& ba) {
-            for (int j = 0; j <= i; ++j) {
+            for (std::size_t j = 0; j < i; ++j)
                 delete B[j];
-            }
-            delete B;
+
+            delete[] B;
             throw ba;
         }
         B[i] = ptr;
@@ -87,7 +87,7 @@ bool Matrix::operator!=(const Matrix& other) const {
 }
 
 Matrix::~Matrix() {
-    for (int j = 0; j < rows; ++j)
+    for (std::size_t j = 0; j < rows; ++j)
         delete B[j];
-    delete B;
+    delete[] B;
 }
