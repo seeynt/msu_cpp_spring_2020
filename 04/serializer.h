@@ -10,19 +10,19 @@ public:
         : out(out_) { }
 
     template <class T>
-    Error save(T& object) {
+    Error save(T&& object) {
         return object.serialize(*this);
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT... args) {
+    Error operator()(ArgsT&&... args) {
         return process(args...);
     }
     
 private:
 	std::ostream& out;
 
-	Error process(bool val) {
+	Error process(bool& val) {
 	    if (val)
 	    	out << "true" << sep;
 	    else
@@ -30,15 +30,15 @@ private:
 	    return Error::NoError;
 	}
 
-	Error process(uint64_t val) {
+	Error process(uint64_t& val) {
 	    out << val << sep;
 	    return Error::NoError;
 	}
     
 	template <class T, class... ArgsT>
-	Error process(T& val, ArgsT&... args) {
+	Error process(T&& val, ArgsT&&... args) {
 	    process(val);
-	    return process(std::forward<ArgsT&>(args)...);
+	    return process(std::forward<ArgsT>(args)...);
 	}
 };
 
@@ -53,7 +53,7 @@ public:
     }
 
     template <class... ArgsT>
-    Error operator()(ArgsT&... args) {
+    Error operator()(ArgsT&&... args) {
         return process(args...);
     }
     
@@ -82,10 +82,10 @@ private:
 	}
     
 	template <class T, class... ArgsT>
-	Error process(T& val, ArgsT&... args) {
+	Error process(T&& val, ArgsT&&... args) {
 	    Error err = process(val);
 	    if (err == Error::NoError)
-	    	return process(std::forward<ArgsT&>(args)...);
+	    	return process(std::forward<ArgsT>(args)...);
 	    else
 	    	return Error::CorruptedArchive;
 	}
