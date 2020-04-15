@@ -3,6 +3,7 @@
 
 int main() {
     std::string test = format("{1} + {1} = {0}", "two", "one");
+    std::cout << test << std::endl;
     assert(test == "one + one = two");
 
     std::cout << "Test 1 passed" << std::endl;
@@ -25,7 +26,7 @@ int main() {
         std::cout << "Test 4 passed (missing args)" << std::endl;
     }
 
-    test = format("{-0}{2} = {3}", '-', 0, 100, -100);
+    test = format("{0}{2} = {3}", '-', 0, 100, -100);
     assert(test == "-100 = -100");
     std::cout << "Test 5 passed (excessive args)" << std::endl;
 

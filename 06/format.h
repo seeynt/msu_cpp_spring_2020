@@ -4,22 +4,24 @@
 
 template <class T>
 void insert(std::string& str, int r, T&& val) {
-    std::istringstream is(str);
-    is >> std::noskipws;
     std::ostringstream os;
-    char c; int k;
+    int k, j, len = str.length();
 
-    while (is >> c) {
-        if (c == '{') {
-            is >> k;
+    for (int i = 0; i < len; ++i) {
+        if (str[i] == '{') {
+            j = 0, ++i;
+            while (isdigit(str[i + j]))
+                ++j;
+
+            k = atoi(str.substr(i, j).c_str());
             if (k == r)
                 os << val;
             else
                 os << '{' << k << '}';
-            is >> c;
+            i += j;
         }
         else
-            os << c;
+            os << str[i];
     }
 
     str = os.str();
@@ -41,22 +43,26 @@ void process(std::string& str, int r, int n, T&& val, ArgsT&&... args) {
 template <class... ArgsT>
 std::string format(const std::string& str, ArgsT&&... args) {
     std::string tmp = str;
-    std::istringstream ss(tmp);
-    ss >> std::noskipws;
-    char c; int k; int n = 0;
+    int k, j; int n = 0, len = tmp.length();
 
-    while (ss >> c) {
-        if (c == '}')
+    for (int i = 0; i < len; ++i) {
+        if (tmp[i] == '}')
             throw std::runtime_error("Invalid use of {}");
-        if (c == '{') {
-            if (ss >> k && k >= 0 && ss >> c && c == '}')
-                n = std::max(n, k);
-            else
+        if (tmp[i] == '{') {
+            j = 0, ++i;
+            while (isdigit(tmp[i + j]))
+                ++j;
+
+            k = atoi(tmp.substr(i, j).c_str());
+            if (k < 0 || tmp[i + j] != '}')
                 throw std::runtime_error("Invalid use of {}");
+
+            i += j;
+            n = std::max(n, k);
         }
     }
 
     if (n)
-        process(tmp, 0, n, args...);
+        process(tmp, 0, n, std::forward<ArgsT>(args)...);
     return tmp;
 }
