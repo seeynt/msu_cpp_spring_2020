@@ -1,6 +1,7 @@
 #include "allocator.h"
 #include "iterator.h"
 #include <iterator>
+#include <exception>
 
 template<class T, class Alloc = std::allocator<T>>
 
@@ -83,8 +84,17 @@ public:
     reverse_iterator rbegin() noexcept { return reverse_iterator(end()); }
     reverse_iterator rend() noexcept { return reverse_iterator(begin()); }
 
-    reference operator[](size_type ind) { return array_[ind]; }
-    const_reference operator [](size_type ind) const { return array_[ind]; }
+    reference operator[](size_type ind) {
+        if (ind >= current_)
+            throw std::out_of_range("Index is out of range");
+        return array_[ind];
+    }
+
+    const_reference operator [](size_type ind) const {
+        if (ind >= current_)
+            throw std::out_of_range("Index is out of range");
+        return array_[ind];
+    }
 
     void push_back(T&& value) {
         if (current_ == capacity_)
