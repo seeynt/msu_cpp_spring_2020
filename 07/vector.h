@@ -24,15 +24,16 @@ public:
         array_ = allocator.allocate(sz);
         capacity_ = sz;
         current_ = sz;
+        for (size_type i = 0; i < current_; ++i)
+            allocator.construct(array_ + i);
     }
 
     Vector(size_type sz, const_reference& defaultValue) {
         array_ = allocator.allocate(sz);
         capacity_ = sz;
         current_ = sz;
-
         for (size_type i = 0; i < current_; ++i)
-            array_[i] = defaultValue;
+            allocator.construct(array_ + i, defaultValue);
     }
 
     Vector(std::initializer_list<value_type> init) {
@@ -40,7 +41,7 @@ public:
         capacity_ = current_ = init.size();
         auto i = init.begin();
         for (size_type j = 0; i < init.end(); ++i, ++j)
-            array_[j] = *i;
+            allocator.construct(array_ + j, *i);
     }
 
     Vector(Vector&& other) noexcept {
@@ -54,19 +55,23 @@ public:
         array_ = allocator.allocate(other.current_);
         capacity_ = current_ = other.current_;
         for (size_type i = 0; i < current_; ++i)
-            array_[i] = other.array_[i];
+            allocator.construct(array_ + i, other.array_[i]);
     }
 
     Vector operator=(const Vector& other) {
-        if (capacity_ < other.current_)
+        if (capacity_ >= other.current_)
             this->reserve(other.current_);
-        current_ = other.current_;
         for (size_type i = 0; i < current_; ++i)
             array_[i] = other.array_[i];
+        for (size_type i = current_; i < other.current_; ++i)
+            allocator.construct(array_ + i, other.array_[i]);
+        current_ = other.current_;
         return *this;
     }
 
     Vector operator=(Vector&& other) {
+        for (size_type i = 0; i < current_; ++i)
+            allocator.destroy(array_ + i);
         allocator.deallocate(array_, capacity_);
         array_ = other.array_;
         current_ = other.current_;
@@ -76,6 +81,8 @@ public:
     }
 
     ~Vector() {
+        for (size_type i = 0; i < current_; ++i)
+            allocator.destroy(array_ + i);
         allocator.deallocate(array_, capacity_);
     }
 
@@ -96,13 +103,7 @@ public:
         return array_[ind];
     }
 
-    void push_back(T&& value) {
-        if (current_ == capacity_)
-            this->reserve(capacity_ * 2);
-        array_[current_++] = value;
-    }
-
-    void push_back(const T& value) {
+    void push_back(const_reference value) {
         if (current_ == capacity_)
             this->reserve(capacity_ * 2);
         array_[current_++] = value;
@@ -115,6 +116,10 @@ public:
     void resize(size_type sz) {
         if (sz > current_)
             this->reserve(sz);
+        for (size_type i = current_; i < sz; ++i)
+            allocator.construct(array_ + i);
+        for (size_type i = sz; i < current_; ++i)
+            allocator.destroy(array_ + i);
         current_ = sz;
     }
 
@@ -122,7 +127,9 @@ public:
         if (sz > current_)
             this->reserve(sz);
         for (size_type i = current_; i < sz; ++i)
-            array_[i] = defaultValue;
+            allocator.construct(array_ + i, defaultValue);
+        for (size_type i = sz; i < current_; ++i)
+            allocator.destroy(array_ + i);
         current_ = sz;
     }
 
@@ -134,12 +141,13 @@ public:
         if (sz <= capacity_)
             return;
         pointer new_array = allocator.allocate(sz);
-        for (size_type i = 0; i < current_; ++i)
-            new_array[i] = array_[i];
+        for (size_type i = 0; i < current_; ++i) {
+            allocator.construct(new_array + i, array_[i]);
+            allocator.destroy(array_ + i);
+        }
         allocator.deallocate(array_, capacity_);
         array_ = new_array;
         capacity_ = sz;
-
     }
 
     size_type capacity() const noexcept {
@@ -147,6 +155,8 @@ public:
     }
 
     void clear() noexcept {
+        for (size_type i = 0; i < current_; ++i)
+            allocator.destroy(array_ + i);
         current_ = 0;
     }
 
