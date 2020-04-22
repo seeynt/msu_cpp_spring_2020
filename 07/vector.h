@@ -1,4 +1,3 @@
-#include "allocator.h"
 #include "iterator.h"
 #include <iterator>
 #include <exception>
@@ -58,17 +57,6 @@ public:
             allocator.construct(array_ + i, other.array_[i]);
     }
 
-    Vector operator=(const Vector& other) {
-        if (capacity_ >= other.current_)
-            this->reserve(other.current_);
-        for (size_type i = 0; i < current_; ++i)
-            array_[i] = other.array_[i];
-        for (size_type i = current_; i < other.current_; ++i)
-            allocator.construct(array_ + i, other.array_[i]);
-        current_ = other.current_;
-        return *this;
-    }
-
     Vector operator=(Vector&& other) {
         for (size_type i = 0; i < current_; ++i)
             allocator.destroy(array_ + i);
@@ -77,6 +65,18 @@ public:
         current_ = other.current_;
         capacity_ = other.capacity_;
         other.array_ = nullptr;
+        return *this;
+    }
+
+
+    Vector operator=(const Vector& other) {
+        if (capacity_ >= other.current_)
+            this->reserve(other.current_);
+        for (size_type i = 0; i < current_; ++i)
+            array_[i] = other.array_[i];
+        for (size_type i = current_; i < other.current_; ++i)
+            allocator.construct(array_ + i, other.array_[i]);
+        current_ = other.current_;
         return *this;
     }
 
@@ -101,6 +101,12 @@ public:
         if (ind >= current_)
             throw std::out_of_range("Index is out of range");
         return array_[ind];
+    }
+
+    void push_back(value_type&& value) {
+        if (current_ == capacity_)
+            this->reserve(capacity_ * 2);
+        array_[current_++] = std::move(value);
     }
 
     void push_back(const_reference value) {

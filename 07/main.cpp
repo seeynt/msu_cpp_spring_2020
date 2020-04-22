@@ -2,13 +2,14 @@
 #include <string>
 #include <sstream>
 #include "vector.h"
+#include "allocator.h"
 
 using namespace std;
 
 int main() {
-    Vector<int> a;
-    Vector<int> b(100);
-    const Vector<int> c{ 1, 2, 3, 4, 3, 2, 1 };
+    Vector<int, Allocator<int>> a;
+    Vector<int, Allocator<int>> b(100);
+    const Vector<int, Allocator<int>> c{ 1, 2, 3, 4, 3, 2, 1 };
 
     assert (a.size() == 0 && b.size() == 100 && c.size() == 7);
     cout << "Test 1 passed (size)" << endl;
@@ -22,9 +23,10 @@ int main() {
     assert (a[0] == a[6] && a[1] == a[5] && a[3] == 10);
     cout << "Test 3 passed ([])" << endl;
 
+    int n = 2;
     a.push_back(0);
     a.push_back(1);
-    a.push_back(2);
+    a.push_back(std::move(n));
     assert(a[7] == 0 && a[8] == 1 && a[9] == 2 && a.capacity() == 14 && a.size() == 10);
     cout << "Test 4 passed (push_back)" << endl;
 

@@ -10,10 +10,11 @@ class Allocator {
     using pointer = T*;
 
 public:
-    reference allocate(size_type sz) {
+    pointer allocate(size_type sz) {
         auto ptr = (pointer)malloc(sz * sizeof(value_type));
         if (!ptr)
             throw std::bad_alloc();
+        return ptr;
     }
 
     void deallocate(pointer ptr, size_type n = 0) {
@@ -21,12 +22,16 @@ public:
         free(ptr);
     }
 
+    void construct(pointer ptr) {
+        new(ptr) value_type();
+    }
+
     void construct(pointer ptr, const_reference val) {
-        return new(ptr) value_type(val);
+        new(ptr) value_type(val);
     }
 
     void destroy(pointer ptr) {
-        return delete ptr;
+        ptr->~value_type();
     }
 
     size_t max_size() const noexcept {
