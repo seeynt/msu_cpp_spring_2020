@@ -14,16 +14,17 @@ class ThreadPool {
 
     std::vector<std::thread> threads;
     std::queue<std::function<void()>> tasks;
+    bool stop;
 
 public:
-    explicit ThreadPool(std::size_t poolSize) {
+    explicit ThreadPool(std::size_t poolSize) : stop(false) {
         for (std::size_t i = 0; i < poolSize; ++i) {
             threads.emplace_back([this] {
                 while (true) {
                     std::unique_lock<std::mutex> lock(this->mutex_);
-                    this->cv.wait(lock, [this]{ return !this->tasks.empty(); });
+                    this->cv.wait(lock, [this]{ return !this->tasks.empty() || this->stop; });
 
-                    if(this->tasks.empty())
+                    if(this->stop)
                         return;
 
                     auto task = std::move(this->tasks.front());
@@ -37,6 +38,7 @@ public:
 
     ~ThreadPool() {
         std::unique_lock<std::mutex> lock(mutex_);
+        stop = true;
         cv.notify_all();
         for (std::thread &thread_: threads)
             thread_.detach();
