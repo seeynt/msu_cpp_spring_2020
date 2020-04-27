@@ -39,9 +39,9 @@ public:
     ~ThreadPool() {
         std::unique_lock<std::mutex> lock(mutex_);
         stop = true;
-        cv.notify_all();
         for (std::thread &thread_: threads)
             thread_.detach();
+        cv.notify_all();
     }
 
     template <class Func, class... Args>
