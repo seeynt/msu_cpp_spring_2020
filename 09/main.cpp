@@ -3,7 +3,7 @@
 #include <vector>
 #include <random>
 
-void read_vector(std::vector<uint64_t>& v, std::string fname) {
+void read_vector(std::vector<uint64_t>& v, std::string&& fname) {
 	std::ifstream fin(fname);
 	uint64_t val;
 
@@ -12,14 +12,16 @@ void read_vector(std::vector<uint64_t>& v, std::string fname) {
 		v.push_back(val);
 }
 
-void generate_file(std::string fname, size_t n) {
-	std::ofstream fout(fname);
+void generate_file(std::string&& fname, size_t n) {
+	std::ofstream fout(fname, std::ios::binary);
 	std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<uint64_t> dis;
 
-    for (size_t i = 0; i < n; ++i)
-    	fout << dis(gen) << ' ';
+    for (size_t i = 0; i < n; ++i) {
+        auto val = dis(gen);
+        fout.write(reinterpret_cast<const char *>(&val), sizeof(val));
+    }
 }
 
 int main() {
@@ -64,13 +66,13 @@ int main() {
     assert(raw == sorted);
     std::cout << "Test 5 passed (random array)" << std::endl;
 
-	generate_file("test6", 10000);
+	generate_file("test6", 100000000);
     read_vector(raw, "test6");
     sort_("test6");
     read_vector(sorted, "sorted_test6");
     std::sort(raw.begin(), raw.end());
     assert(raw == sorted);
-    std::cout << "Test 6 passed (big random array)" << std::endl;
+    std::cout << "Test 6 passed (REALLY big random array)" << std::endl;
 
     std::cout << "All 6 tests passed. Success." << std::endl;
     return 0;
