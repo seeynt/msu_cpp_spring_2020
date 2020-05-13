@@ -52,10 +52,10 @@ void sort_(const std::string& fname) {
     uint64_t val;
 
     std::ios_base::sync_with_stdio(false);
-    std::ifstream fin(fname);
+    std::ifstream fin(fname, std::ios::binary);
     std::ofstream fout;
 
-    while (fin >> val) {
+    while (fin.read(reinterpret_cast<char *>(&val), sizeof(uint64_t))) {
         fout.open(std::to_string(n));
         fout << val << ' ';
         fout.close();
@@ -68,5 +68,14 @@ void sort_(const std::string& fname) {
     second.get();
 
     merge(0, n / 2);
-    rename(std::to_string(0).c_str(), ("sorted_" + fname).c_str());
+
+    fin.close();
+    fin.open(std::to_string(0).c_str());
+    fout.open(("sorted_" + fname).c_str(), std::ios::binary);
+
+    while (fin >> val)
+        fout.write(reinterpret_cast<const char *>(&val), sizeof(uint64_t));
+
+
+    remove(std::to_string(0).c_str());
 }
