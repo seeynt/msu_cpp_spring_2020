@@ -4,17 +4,17 @@
 #include <random>
 
 void read_vector(std::vector<uint64_t>& v, std::string&& fname) {
-	std::ifstream fin(fname);
-	uint64_t val;
+    std::ifstream fin(fname);
+    uint64_t val;
 
-	v.clear();
-	while (fin >> val)
-		v.push_back(val);
+    v.clear();
+    while (fin >> val)
+        v.push_back(val);
 }
 
 void generate_file(std::string&& fname, size_t n) {
-	std::ofstream fout(fname, std::ios::binary);
-	std::random_device rd;
+    std::ofstream fout(fname, std::ios::binary);
+    std::random_device rd;
     std::mt19937_64 gen(rd());
     std::uniform_int_distribution<uint64_t> dis;
 
@@ -66,7 +66,7 @@ int main() {
     assert(raw == sorted);
     std::cout << "Test 5 passed (random array)" << std::endl;
 
-	generate_file("test6", 100000000);
+    generate_file("test6", 100000000);
     read_vector(raw, "test6");
     sort_("test6");
     read_vector(sorted, "sorted_test6");

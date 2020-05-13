@@ -17,7 +17,7 @@ static void merge(size_t start, size_t end) {
     fb >> b_val;
 
     while (!fa.eof() && !fb.eof()) {
-        if (a_val < b_val) 
+        if (a_val < b_val)
             fc << a_val << ' ', fa >> a_val;
         else
             fc << b_val << ' ', fb >> b_val;
