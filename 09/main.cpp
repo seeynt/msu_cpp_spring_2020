@@ -1,6 +1,7 @@
 #include "sort_.h"
 #include <vector>
 #include <random>
+#include <iostream>
 
 void read_vector(std::vector<uint64_t>& v, std::string&& fname) {
     std::ifstream fin(fname, std::ios::binary);
@@ -32,7 +33,7 @@ void generate_file_1() {
 void generate_file_2() {
     std::ofstream fout("test2", std::ios::binary);
     uint64_t val = 100;
-    for (int i = 0; i < 100; ++i)
+    for (int i = 0; i < 10; ++i)
         fout.write(reinterpret_cast<const char *>(&val), sizeof(uint64_t));
 }
 
