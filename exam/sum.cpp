@@ -10,7 +10,7 @@ static int sum_line(const std::string line) {
 		sum += val;
 
 	{
-		mutex_.lock();
+		std::unique_lock<std::mutex> lock(mutex_);
 		result += sum;
 		sum = result;
 	}
